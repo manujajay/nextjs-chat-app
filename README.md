@@ -26,7 +26,7 @@ A modern, responsive chat interface built with Next.js, TypeScript, and Tailwind
 
 1. **Clone or download this repository:**
    ```bash
-   git clone https://github.com/yourusername/nextjs-chat-app.git
+   git clone https://github.com/manujajay/nextjs-chat-app.git
    cd nextjs-chat-app
    ```
 
