@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    ================================
+    Example: HTML + CSS + JavaScript
+    ================================
+    WHAT THIS FILE SHOWS
+    - HTML: semantic structure (header/nav/main/footer), accessible markup
+    - CSS: variables, reset, layout (flex/grid), responsive design, component styles
+    - JS : DOM selection, event listeners, state, localStorage, form validation, ARIA updates
+
+    HOW TO USE
+    - Save as index.html and open in any modern browser.
+  -->
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HTML + CSS + JavaScript — Full Example</title>
+
+  <style>
+    /* ---------------------------
+       1) CSS VARIABLES & RESET
+       ---------------------------
+       - Variables give consistent spacing/colors and are easy to tweak.
+       - A minimal reset normalizes default browser styles.
+    */
+    :root {
+      --bg: #0b1020;
+      --bg-elevated: #121833;
+      --text: #e9eefc;
+      --muted: #9fb0d8;
+      --accent: #7aa2ff;
+      --accent-strong: #5c8bff;
+      --danger: #ff6b6b;
+
+      --radius: 14px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.25);
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-8: 48px;
+
+      --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --transition: 180ms ease;
+    }
+
+    /* Light theme values; JS toggles data-theme on <html> */
+    html[data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --text: #0b1020;
+      --muted: #51607f;
+      --accent: #2b6cff;
+      --accent-strong: #204fcc;
+      --danger: #e11d48;
+      --shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    /* Reset-ish */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: radial-gradient(1000px 600px at 20% -10%, #1b2450 0%, transparent 60%) ,
+                  radial-gradient(800px 500px at 110% 10%, #2b356d 0%, transparent 60%) ,
+                  var(--bg);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    img, svg, video { display: block; max-width: 100%; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { font: inherit; }
+
+    /* ---------------------------
+       2) LAYOUT HELPERS
+       --------------------------- */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 var(--space-5);
+    }
+    header {
+      position: sticky; /* sticks to top on scroll */
+      top: 0;
+      backdrop-filter: saturate(140%) blur(6px);
+      background: color-mix(in oklab, var(--bg) 75%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+      z-index: 10;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: var(--space-4);
+    }
+    .nav a.logo {
+      font-weight: 800;
+      letter-spacing: .2px;
+      color: var(--text);
+    }
+    .nav-actions {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+    }
+
+    main {
+      padding: var(--space-8) 0;
+      display: grid;
+      gap: var(--space-8);
+    }
+
+    footer {
+      border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+      padding: var(--space-6) 0;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ---------------------------
+       3) CARDS & COMPONENTS
+       --------------------------- */
+    .hero {
+      display: grid;
+      gap: var(--space-4);
+      padding: var(--space-8);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(600px 400px at 10% 0%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 60%),
+        linear-gradient(180deg, color-mix(in oklab, var(--bg-elevated) 70%, transparent), color-mix(in oklab, var(--bg) 80%, transparent));
+      box-shadow: var(--shadow);
+    }
+    .hero h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); }
+    .hero p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+      border-radius: var(--radius);
+      padding: var(--space-6);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: var(--space-4);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .muted { color: var(--muted); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+      background: linear-gradient(180deg, color-mix(in oklab, var(--bg-elevated) 75%, transparent), color-mix(in oklab, var(--bg) 85%, transparent));
+      color: var(--text);
+      cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), background var(--transition);
+      user-select: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 8px 20px color-mix(in oklab, var(--accent) 50%, transparent);
+    }
+    .btn.danger {
+      background: linear-gradient(180deg, color-mix(in oklab, var(--danger) 85%, white 10%), var(--danger));
+      border-color: transparent; color: white;
+      box-shadow: 0 8px 20px color-mix(in oklab, var(--danger) 50%, transparent);
+    }
+
+    /* Inputs */
+    .field { display: grid; gap: 8px; }
+    .input, .select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid color-mix(in oklab, var(--text) 14%, transparent);
+      background: color-mix(in oklab, var(--bg-elevated) 80%, var(--bg) 20%);
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .input:focus, .select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 30%, transparent);
+    }
+    .error { color: var(--danger); font-size: 14px; }
+
+    /* Utility */
+    .row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+    .spacer { height: var(--space-6); }
+    .center { display: grid; place-items: center; }
+
+    /* Responsive tweaks */
+    @media (max-width: 520px) {
+      .nav { height: auto; padding: var(--space-3) 0; gap: var(--space-3); }
+      .nav-actions { width: 100%; justify-content: space-between; }
+      .hero { padding: var(--space-6); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- =========================
+       HEADER / NAVIGATION
+       - Semantic <header> for page banner
+       - nav links use hashes; JS adds smooth scroll
+  ========================== -->
+  <header>
+    <div class="container nav" role="navigation" aria-label="Primary">
+      <a href="#" class="logo">DemoSite</a>
+      <div class="nav-actions">
+        <a href="#counter">Counter</a>
+        <a href="#form">Form</a>
+        <a href="#list">List</a>
+        <button id="themeToggle" class="btn" type="button" aria-pressed="false" title="Toggle light/dark theme">
+          Toggle Theme
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+  <main class="container" id="top">
+    <!--
+      HERO SECTION
+      - Introduces the page
+      - Shows headings/paragraphs and basic content styling
+    -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">HTML + CSS + JavaScript in One File</h1>
+      <p>
+        This page demonstrates a few common UI patterns:
+        a counter, a validated form, a dynamic list, smooth scrolling, and a theme toggle.<br />
+        Explore the code to see how structure (HTML), style (CSS), and behavior (JS) work together.
+      </p>
+      <div class="row">
+        <a class="btn primary" href="#counter">Try Counter</a>
+        <a class="btn" href="#form">Fill Form</a>
+        <a class="btn" href="#list">Edit List</a>
+      </div>
+    </section>
+
+    <!--
+      COUNTER CARD
+      - Demonstrates basic state and ARIA live updates
+      - JS will mutate the number safely and update the UI
+    -->
+    <section id="counter" class="card" aria-labelledby="counter-title">
+      <h2 id="counter-title">Interactive Counter</h2>
+      <p class="muted">Shows simple state management with buttons and keyboard support.</p>
+
+      <div class="row" role="group" aria-label="Counter controls">
+        <button id="decrement" class="btn" type="button" aria-label="Decrease">–</button>
+
+        <!--
+          aria-live="polite" announces updates to assistive tech
+          tabindex="0" lets users focus the number (optional)
+        -->
+        <output id="count" aria-live="polite" tabindex="0">0</output>
+
+        <button id="increment" class="btn" type="button" aria-label="Increase">+</button>
+        <button id="reset" class="btn danger" type="button">Reset</button>
+      </div>
+    </section>
+
+    <!--
+      FORM CARD
+      - Demonstrates controlled inputs, client-side validation, and error display
+      - On submit, JS prevents full page reload (SPA-like behavior)
+    -->
+    <section id="form" class="card" aria-labelledby="form-title">
+      <h2 id="form-title">Contact Form (Client-side Validation)</h2>
+      <p class="muted">Validates required fields and email format before "submitting".</p>
+
+      <form id="contactForm" novalidate>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" class="input" placeholder="Ada Lovelace" required />
+          <div id="nameError" class="error" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" class="input" type="email" placeholder="ada@example.com" required />
+          <div id="emailError" class="error" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" class="select">
+            <option value="general">General</option>
+            <option value="support">Support</option>
+            <option value="partnership">Partnership</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" class="input" rows="4" placeholder="Write your message..."></textarea>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" type="submit">Send</button>
+          <span id="formStatus" class="muted" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <!--
+      LIST CARD
+      - Demonstrates dynamic DOM updates, event delegation, and local "state"
+    -->
+    <section id="list" class="card" aria-labelledby="list-title">
+      <h2 id="list-title">Editable To-Do List</h2>
+      <p class="muted">Add items, toggle done state, and remove them.</p>
+
+      <div class="row">
+        <input id="todoInput" class="input" placeholder="Add a task…" />
+        <button id="addTodo" class="btn" type="button">Add</button>
+      </div>
+
+      <ul id="todoList" style="list-style: none; padding-left: 0; margin: var(--space-4) 0; display: grid; gap: var(--space-2);">
+        <!-- Items appended here by JS -->
+      </ul>
+
+      <div class="row">
+        <button id="clearCompleted" class="btn danger" type="button">Clear Completed</button>
+        <span id="todoSummary" class="muted" aria-live="polite"></span>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer>
+    Built with semantic HTML, custom CSS, and vanilla JS. Toggle theme to see CSS variables in action.
+  </footer>
+
+  <script>
+    // ---------------------------------------
+    // 1) THEME TOGGLE (persists in localStorage)
+    // ---------------------------------------
+    (function initTheme() {
+      const KEY = "demo-theme";
+      const root = document.documentElement;
+      const btn = document.getElementById("themeToggle");
+
+      // Load saved theme, default to dark (no data-theme attribute)
+      const saved = localStorage.getItem(KEY);
+      if (saved === "light") {
+        root.setAttribute("data-theme", "light");
+        btn.setAttribute("aria-pressed", "true");
+        btn.textContent = "Switch to Dark";
+      } else {
+        btn.textContent = "Switch to Light";
+      }
+
+      btn.addEventListener("click", () => {
+        const isLight = root.getAttribute("data-theme") === "light";
+        if (isLight) {
+          root.removeAttribute("data-theme");     // dark
+          localStorage.setItem(KEY, "dark");
+          btn.setAttribute("aria-pressed", "false");
+          btn.textContent = "Switch to Light";
+        } else {
+          root.setAttribute("data-theme", "light");
+          localStorage.setItem(KEY, "light");
+          btn.setAttribute("aria-pressed", "true");
+          btn.textContent = "Switch to Dark";
+        }
+      });
+    })();
+
+    // ---------------------------------------
+    // 2) SMOOTH SCROLL NAV (progressive enhancement)
+    // ---------------------------------------
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener("click", (e) => {
+        const id = a.getAttribute("href");
+        if (id.length > 1) {
+          e.preventDefault();
+          const el = document.querySelector(id);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    // ---------------------------------------
+    // 3) COUNTER: simple state with ARIA updates
+    // ---------------------------------------
+    (function initCounter() {
+      const countEl = document.getElementById("count");
+      const incBtn  = document.getElementById("increment");
+      const decBtn  = document.getElementById("decrement");
+      const resetBtn= document.getElementById("reset");
+
+      let count = 0; // component state
+
+      function render() {
+        // Update the UI based on state
+        countEl.textContent = count;
+        // Optional: add visual feedback when negative
+        countEl.style.color = count < 0 ? "var(--danger)" : "var(--text)";
+      }
+
+      incBtn.addEventListener("click", () => { count++; render(); });
+      decBtn.addEventListener("click", () => { count--; render(); });
+      resetBtn.addEventListener("click", () => { count = 0; render(); });
+
+      // Keyboard accessibility: Up/Down to change value
+      countEl.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp") { count++; render(); }
+        if (e.key === "ArrowDown") { count--; render(); }
+      });
+
+      render(); // initial paint
+    })();
+
+    // ---------------------------------------
+    // 4) FORM: client-side validation
+    // ---------------------------------------
+    (function initForm() {
+      const form = document.getElementById("contactForm");
+      const name = document.getElementById("name");
+      const email = document.getElementById("email");
+      const nameError = document.getElementById("nameError");
+      const emailError = document.getElementById("emailError");
+      const status = document.getElementById("formStatus");
+
+      function validateEmail(value) {
+        // Simple email pattern for demo purposes
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault(); // prevent page reload
+        let ok = true;
+        nameError.textContent = "";
+        emailError.textContent = "";
+        status.textContent = "";
+
+        if (!name.value.trim()) {
+          nameError.textContent = "Please enter your name.";
+          ok = false;
+        }
+        if (!email.value.trim()) {
+          emailError.textContent = "Please enter your email.";
+          ok = false;
+        } else if (!validateEmail(email.value.trim())) {
+          emailError.textContent = "Please enter a valid email address.";
+          ok = false;
+        }
+
+        if (!ok) return;
+
+        // Simulate async submit
+        status.textContent = "Sending…";
+        setTimeout(() => {
+          status.textContent = "Thanks! Your message was sent (simulated).";
+          form.reset();
+        }, 700);
+      });
+    })();
+
+    // ---------------------------------------
+    // 5) TODO LIST: dynamic DOM + event delegation
+    // ---------------------------------------
+    (function initTodo() {
+      const input = document.getElementById("todoInput");
+      const addBtn = document.getElementById("addTodo");
+      const list = document.getElementById("todoList");
+      const clearBtn = document.getElementById("clearCompleted");
+      const summary = document.getElementById("todoSummary");
+
+      /** Array of { id:number, text:string, done:boolean } */
+      let todos = [];
+      let nextId = 1;
+
+      function render() {
+        // Clear and repaint list items based on todos state
+        list.innerHTML = "";
+        todos.forEach(item => {
+          const li = document.createElement("li");
+          li.dataset.id = item.id;
+          li.style.display = "grid";
+          li.style.gridTemplateColumns = "24px 1fr auto";
+          li.style.alignItems = "center";
+          li.style.gap = "10px";
+          li.style.padding = "10px 12px";
+          li.style.border = "1px solid color-mix(in oklab, var(--text) 14%, transparent)";
+          li.style.borderRadius = "10px";
+          li.style.background = "color-mix(in oklab, var(--bg-elevated) 90%, var(--bg) 10%)";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = item.done;
+          checkbox.setAttribute("aria-label", "Mark done");
+
+          const text = document.createElement("span");
+          text.textContent = item.text;
+          text.style.textDecoration = item.done ? "line-through" : "none";
+          text.style.color = item.done ? "var(--muted)" : "var(--text)";
+
+          const del = document.createElement("button");
+          del.className = "btn";
+          del.textContent = "Delete";
+          del.setAttribute("aria-label", "Delete item");
+
+          li.append(checkbox, text, del);
+          list.appendChild(li);
+        });
+
+        const remaining = todos.filter(t => !t.done).length;
+        summary.textContent = todos.length
+          ? `${remaining} task${remaining !== 1 ? "s" : ""} remaining`
+          : "No tasks yet";
+      }
+
+      function addTodo(text) {
+        if (!text.trim()) return;
+        todos.push({ id: nextId++, text: text.trim(), done: false });
+        input.value = "";
+        render();
+      }
+
+      // Add item via button or Enter key
+      addBtn.addEventListener("click", () => addTodo(input.value));
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addTodo(input.value);
+      });
+
+      // Event delegation: handle checkbox and delete button from parent <ul>
+      list.addEventListener("click", (e) => {
+        const li = e.target.closest("li");
+        if (!li) return;
+        const id = Number(li.dataset.id);
+        const idx = todos.findIndex(t => t.id === id);
+        if (idx === -1) return;
+
+        if (e.target.tagName === "INPUT" && e.target.type === "checkbox") {
+          todos[idx].done = e.target.checked;
+          render();
+        }
+        if (e.target.tagName === "BUTTON") {
+          todos.splice(idx, 1);
+          render();
+        }
+      });
+
+      clearBtn.addEventListener("click", () => {
+        todos = todos.filter(t => !t.done);
+        render();
+      });
+
+      render(); // initial paint
+    })();
+  </script>
+</body>
+</html>
