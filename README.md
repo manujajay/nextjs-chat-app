@@ -19,7 +19,7 @@ A modern, responsive chat interface built with Next.js, TypeScript, and Tailwind
 
 ### Prerequisites
 
-- Node.js 18+ installed on your machine
+- Node.js 18+ installed on your machine: https://kinsta.com/blog/how-to-install-node-js/
 - An OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 
 ### Installation
